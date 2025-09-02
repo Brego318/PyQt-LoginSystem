@@ -1,0 +1,192 @@
+import sqlite3
+import sys
+from logging import exception
+
+connection = sqlite3.connect("C:/Database/users.db")
+cursor = connection.cursor()
+
+from PyQt5.QtGui import QIcon, QPixmap, QFont
+from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtWidgets import *
+
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        #Basics
+        self.setGeometry(300, 300, 900, 720)
+        self.setMaximumSize(900, 720)
+        self.label = QLabel(self)
+        pixmap = QPixmap("TEST.png")
+        self.label.setPixmap(pixmap)
+        self.label.resize(900, 720)
+        self.setWindowTitle("TEST")
+
+#----------------------------------------------------------------------------
+
+
+
+
+
+        #----------------------------
+        self.initUI()
+        self.ButtonSignUp.clicked.connect(self.SignUp)
+        self.BackLogin.clicked.connect(self.Login)
+        self.button.clicked.connect(self.Login_in_your_account)
+
+
+    def initUI(self):
+
+        #login button
+        self.button = QPushButton(self)
+        self.button.setFont(QFont("Arial", 50))
+        self.button.setGeometry(610, 400, 200, 70)
+        self.button.setText("Login")
+        self.button.setStyleSheet("background-color: rgba(0,0,0,0);"
+                                  "border: none;"
+                                  "color: white;"
+                                  "font-size: 25px;"
+                                  )
+
+        #UsernameHolder
+        self.TextPlaceHolder = QTextEdit(self)
+        self.TextPlaceHolder.setPlaceholderText("Username")
+        self.TextPlaceHolder.setGeometry(600, 280, 250, 55)
+        self.TextPlaceHolder.setFont(QFont("Arial", 25))
+
+        #passwordHolder
+        self.Wordpassholder = QLineEdit(self)
+        self.Wordpassholder.setPlaceholderText("Password")
+        self.Wordpassholder.setGeometry(600, 350, 250, 55)
+        self.Wordpassholder.setFont(QFont("Arial", 20))
+        self.Wordpassholder.setEchoMode(QLineEdit.Password)
+
+
+        #LOGIN LABEl
+        self.LoginLabel = QLabel(self)
+        self.LoginLabel.setGeometry(670, 220, 250, 55)
+        self.LoginLabel.show()
+        self.LoginLabel.setFont(QFont("Arial", 25))
+        self.LoginLabel.setStyleSheet("color: White;")
+        self.LoginLabel.setText("LOGIN")
+
+        #SIGNUP BUTTON TO NEW WINDOW
+        self.ButtonSignUp = QPushButton(self)
+        self.ButtonSignUp.setGeometry(655, 450, 120, 30)
+        self.ButtonSignUp.setText("SignUp Here")
+        self.ButtonSignUp.setStyleSheet("Background-color: rgba(0,0,0,0);"
+                                  "border: none;"
+                                  "color: white;"
+                                  "font-size: 17px;")
+
+        #CREATEACCOUNTLABEL
+        self.Createaccountlabel = QLabel(self)
+        self.Createaccountlabel.setGeometry(600, 20, 250, 300)
+        self.Createaccountlabel.hide()
+        self.Createaccountlabel.setFont(QFont("Arial", 20))
+        self.Createaccountlabel.setText("CREATE ACCOUNT")
+        self.Createaccountlabel.setStyleSheet("color: white;")
+
+        #Creataccountbutton
+        self.accountbuttoncreation = QPushButton(self)
+        self.accountbuttoncreation.hide()
+        self.accountbuttoncreation.setFont(QFont("Arial", 20))
+        self.accountbuttoncreation.setGeometry(610, 400, 200, 70)
+        self.accountbuttoncreation.setText("Create Account")
+        self.accountbuttoncreation.setStyleSheet("background-color: rgba(0,0,0,0);"
+                                  "border: none;"
+                                  "color: white;"
+                                  "font-size: 25px;"
+                                  )
+        self.accountbuttoncreation.clicked.connect(self.created_new_account)
+
+
+        #passwordHolder2
+        self.Password = QLineEdit(self)
+        self.Password.setPlaceholderText("Password")
+        self.Password.hide()
+        self.Password.setGeometry(600, 280, 250, 55)
+        self.Password.setFont(QFont("Arial", 20))
+        self.Password.setEchoMode(QLineEdit.Password)
+
+        #UsernameHolder2
+        self.TextPlace = QTextEdit(self)
+        self.TextPlace.setPlaceholderText("Username")
+        self.TextPlace.hide()
+        self.TextPlace.setGeometry(600, 210, 250, 55)
+        self.TextPlace.setFont(QFont("Arial", 25))
+
+
+        #BackToLogin Button
+        self.BackLogin = QPushButton(self)
+        self.BackLogin.setText("Login")
+        self.BackLogin.hide()
+        self.BackLogin.setFont(QFont("Arial", 20))
+        self.BackLogin.setGeometry(690, 450, 70, 30)
+        self.BackLogin.setStyleSheet("background-color: rgba(0,0,0,0);"
+                                     "border: none;"
+                                     "color: white;"
+                                     "font-size: 21px;")
+
+
+    def SignUp(self):
+        self.LoginLabel.hide()
+        self.Createaccountlabel.show()
+        self.button.hide()
+        self.accountbuttoncreation.show()
+        self.ButtonSignUp.hide()
+        self.TextPlaceHolder.hide()
+        self.Wordpassholder.hide()
+        self.Password.show()
+        self.TextPlace.show()
+        self.BackLogin.show()
+
+    def Login(self):
+        self.LoginLabel.show()
+        self.Createaccountlabel.hide()
+        self.button.show()
+        self.accountbuttoncreation.hide()
+        self.ButtonSignUp.show()
+        self.TextPlaceHolder.show()
+        self.Wordpassholder.show()
+        self.Password.hide()
+        self.TextPlace.hide()
+        self.BackLogin.hide()
+
+    def created_new_account(self):
+        username_email = self.TextPlace.toPlainText()
+        password = self.Password.text()
+
+
+        data = [username_email, password]
+
+        if username_email == "" or password == "":
+            print("Enter Correct Input")
+            return
+        else:
+            cursor.execute("INSERT INTO users ('Username/email', Password) VALUES (?, ?)", [username_email, password])
+
+        connection.commit()
+        print("Account Created")
+
+    def Login_in_your_account(self):
+        username_email = self.TextPlaceHolder.toPlainText().strip()
+        password = self.Wordpassholder.text().strip()
+
+        data = [username_email, password]
+
+        cursor.execute('SELECT * FROM users WHERE "username/email" = ? AND "Password" = ?',
+                       (username_email, password))
+        result = cursor.fetchone()
+
+        if result:
+            print("Logged In:", result)
+        else:
+            print("Account Not Found")
+
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    window = MainWindow()
+    window.show()
+    sys.exit(app.exec_())
+    connection.close()
